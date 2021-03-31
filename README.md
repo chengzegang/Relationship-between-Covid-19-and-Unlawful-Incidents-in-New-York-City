@@ -1,4 +1,4 @@
-# Understanding the Relation between Covid-19 and Unlawful incidents
+# Understanding the Relationship between Covid-19 and Unlawful Incidents in New York City
 ## Overview
 
 
