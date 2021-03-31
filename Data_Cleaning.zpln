@@ -1,0 +1,440 @@
+﻿{
+  "paragraphs": [
+    {
+      "title": "NYC Hate Crimes 2019-2020",
+      "text": "%pyspark\nimport pandas as pd\nfrom pyspark.sql import functions as F\ncrimes = spark.read.format(\"csv\").options(header=\"true\", inferschema=\"true\").load(\"data/NYPD_Hate_Crimes.csv\")\n\n# Replace the space in column names with '_' to simplify query\ncrimes = crimes.select([F.col(col).alias(col.replace(' ', '_')) for col in crimes.columns])",
+      "user": "anonymous",
+      "dateUpdated": "2021-03-30T23:55:49-0400",
+      "progress": 0,
+      "config": {
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/python",
+        "fontSize": 9,
+        "title": true,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://hc10.nyu.cluster:39979/jobs/job?id=61",
+              "$$hashKey": "object:599"
+            },
+            {
+              "jobUrl": "http://hc10.nyu.cluster:39979/jobs/job?id=62",
+              "$$hashKey": "object:600"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1617151746420_919769497",
+      "id": "paragraph_1617151746420_919769497",
+      "dateCreated": "2021-03-30T20:49:06-0400",
+      "dateStarted": "2021-03-30T23:45:32-0400",
+      "dateFinished": "2021-03-30T23:45:32-0400",
+      "status": "FINISHED",
+      "focus": true,
+      "$$hashKey": "object:318"
+    },
+    {
+      "text": "%pyspark\ncrimes.createOrReplaceTempView(\"crimes\")\ncrimes.printSchema()",
+      "user": "anonymous",
+      "dateUpdated": "2021-03-30T23:45:32-0400",
+      "progress": 0,
+      "config": {
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/python",
+        "fontSize": 9,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "root\n |-- Full_Complaint_ID: long (nullable = true)\n |-- Complaint_Year_Number: integer (nullable = true)\n |-- Month_Number: integer (nullable = true)\n |-- Record_Create_Date: string (nullable = true)\n |-- Complaint_Precinct_Code: integer (nullable = true)\n |-- Patrol_Borough_Name: string (nullable = true)\n |-- County: string (nullable = true)\n |-- Law_Code_Category_Description: string (nullable = true)\n |-- Offense_Description: string (nullable = true)\n |-- PD_Code_Description: string (nullable = true)\n |-- Bias_Motive_Description: string (nullable = true)\n |-- Offense_Category: string (nullable = true)\n |-- Other_Motive_Description: string (nullable = true)\n |-- Arrest_Date: string (nullable = true)\n |-- Arrest_Id: string (nullable = true)\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1617152182128_1639934899",
+      "id": "paragraph_1617152182128_1639934899",
+      "dateCreated": "2021-03-30T20:56:22-0400",
+      "dateStarted": "2021-03-30T23:45:32-0400",
+      "dateFinished": "2021-03-30T23:45:32-0400",
+      "status": "FINISHED",
+      "$$hashKey": "object:319"
+    },
+    {
+      "text": "%pyspark\n# Trimmed unnecessary columns: Patrol Borough, PD Code Description, Arrest Date, renamed remaining columns\nquery = \"select Full_Complaint_ID as ID, Complaint_Year_Number as Year, Month_Number as Month, Record_Create_Date as Date, Complaint_Precinct_Code as Precinct, County, Law_Code_Category_Description as Law_Code_Category, Offense_Description as Offense, Bias_Motive_Description as Bias_Motive, Offense_Category, Other_Motive_Description, Arrest_Id as Arrest from crimes\"\ncrimes = spark.sql(query)\ncrimes.createOrReplaceTempView(\"crimes\")",
+      "user": "anonymous",
+      "dateUpdated": "2021-03-30T23:45:32-0400",
+      "progress": 0,
+      "config": {
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/python",
+        "fontSize": 9,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1617154066454_720380166",
+      "id": "paragraph_1617154066454_720380166",
+      "dateCreated": "2021-03-30T21:27:46-0400",
+      "dateStarted": "2021-03-30T23:45:32-0400",
+      "dateFinished": "2021-03-30T23:45:32-0400",
+      "status": "FINISHED",
+      "$$hashKey": "object:320"
+    },
+    {
+      "text": "%pyspark\nquery = \"select * from crimes where Year = 2019\"\ncrimes_2019 = spark.sql(query)\ncrimes_2019.createOrReplaceTempView(\"crimes_2019\")",
+      "user": "anonymous",
+      "dateUpdated": "2021-03-30T23:45:33-0400",
+      "progress": 0,
+      "config": {
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/python",
+        "fontSize": 9,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1617152186697_838505380",
+      "id": "paragraph_1617152186697_838505380",
+      "dateCreated": "2021-03-30T20:56:26-0400",
+      "dateStarted": "2021-03-30T23:45:33-0400",
+      "dateFinished": "2021-03-30T23:45:33-0400",
+      "status": "FINISHED",
+      "$$hashKey": "object:321"
+    },
+    {
+      "text": "%pyspark\nquery = \"select * from crimes where Year = 2020\"\ncrimes_2020 = spark.sql(query)\ncrimes_2020.createOrReplaceTempView(\"crimes_2020\")",
+      "user": "anonymous",
+      "dateUpdated": "2021-03-30T23:45:33-0400",
+      "progress": 0,
+      "config": {
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/python",
+        "fontSize": 9,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1617152383911_715684013",
+      "id": "paragraph_1617152383911_715684013",
+      "dateCreated": "2021-03-30T20:59:43-0400",
+      "dateStarted": "2021-03-30T23:45:33-0400",
+      "dateFinished": "2021-03-30T23:45:33-0400",
+      "status": "FINISHED",
+      "$$hashKey": "object:322"
+    },
+    {
+      "text": "%pyspark\ncrimes.show()",
+      "user": "anonymous",
+      "dateUpdated": "2021-03-30T23:45:33-0400",
+      "progress": 0,
+      "config": {
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/python",
+        "fontSize": 9,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "+---------------+----+-----+----------+--------+------+-----------------+--------------------+--------------------+--------------------+------------------------+---------+\n|             ID|Year|Month|      Date|Precinct|County|Law_Code_Category|             Offense|         Bias_Motive|    Offense_Category|Other_Motive_Description|   Arrest|\n+---------------+----+-----+----------+--------+------+-----------------+--------------------+--------------------+--------------------+------------------------+---------+\n|201904600132799|2019|    2|02/08/2019|      46| BRONX|           FELONY|      FELONY ASSAULT|ANTI-MALE HOMOSEX...|  Sexual Orientation|                    null|B19606200|\n|201904800157499|2019|    3|03/09/2019|      48| BRONX|      MISDEMEANOR|ASSAULT 3 & RELAT...|          ANTI-WHITE|          Race/Color|                    null|B19610772|\n|201904800154599|2019|    3|03/08/2019|      48| BRONX|      MISDEMEANOR|ASSAULT 3 & RELAT...|          ANTI-WHITE|          Race/Color|                    null|B19610788|\n|201904800159299|2019|    3|03/10/2019|      48| BRONX|      MISDEMEANOR|ASSAULT 3 & RELAT...|          ANTI-WHITE|          Race/Color|                    null|B19610788|\n|201904200333499|2019|    5|05/11/2019|      42| BRONX|           FELONY|             ROBBERY|ANTI-ISLAMIC(MUSLIM)|Religion/Religiou...|                    null|B19620156|\n|201904200333499|2019|    5|05/11/2019|      42| BRONX|           FELONY|             ROBBERY|ANTI-ISLAMIC(MUSLIM)|Religion/Religiou...|                    null|B19620157|\n|201904200333499|2019|    5|05/11/2019|      42| BRONX|           FELONY|             ROBBERY|ANTI-ISLAMIC(MUSLIM)|Religion/Religiou...|                    null|B19620158|\n|201904000639299|2019|    6|06/01/2019|      40| BRONX|           FELONY|                RAPE|          ANTI-WHITE|          Race/Color|                    null|B19625012|\n|201904900423199|2019|    7|07/09/2019|      49| BRONX|           FELONY|      FELONY ASSAULT|       ANTI-HISPANIC|Ethnicity/Nationa...|                    null|B19630132|\n|201904700779599|2019|    8|08/05/2019|      47| BRONX|      MISDEMEANOR|ASSAULT 3 & RELAT...|    ANTI-TRANSGENDER|              Gender|                    null|B19632323|\n|201904301012499|2019|   10|10/22/2019|      43| BRONX|           FELONY|      FELONY ASSAULT|ANTI-ISLAMIC(MUSLIM)|Religion/Religiou...|                    null|B19642917|\n|201904301012499|2019|   10|10/22/2019|      43| BRONX|           FELONY|      FELONY ASSAULT|ANTI-ISLAMIC(MUSLIM)|Religion/Religiou...|                    null|B19642921|\n|201907100753899|2019|   12|12/27/2019|      71| KINGS|           FELONY|MISCELLANEOUS PEN...|         ANTI-JEWISH|Religion/Religiou...|                    null|B19650852|\n|202004400142999|2020|    2|02/06/2020|      44| BRONX|      MISDEMEANOR|ASSAULT 3 & RELAT...|ANTI-MALE HOMOSEX...|  Sexual Orientation|                    null|B20604576|\n|202004400325299|2020|    3|03/28/2020|      44| BRONX|           FELONY|      FELONY ASSAULT|          ANTI-ASIAN|          Race/Color|                    null|B20610471|\n|202004400325299|2020|    3|03/28/2020|      44| BRONX|           FELONY|      FELONY ASSAULT|          ANTI-ASIAN|          Race/Color|                    null|B20610472|\n|202004400325299|2020|    3|03/28/2020|      44| BRONX|           FELONY|      FELONY ASSAULT|          ANTI-ASIAN|          Race/Color|                    null|B20610474|\n|202004900218899|2020|    4|04/12/2020|      49| BRONX|           FELONY|MISCELLANEOUS PEN...|         ANTI-JEWISH|Religion/Religiou...|                    null|B20612516|\n|202004000690299|2020|    7|07/07/2020|      40| BRONX|           FELONY|             ROBBERY|ANTI-MALE HOMOSEX...|  Sexual Orientation|                    null|B20618491|\n|202004000690299|2020|    7|07/07/2020|      40| BRONX|           FELONY|             ROBBERY|ANTI-MALE HOMOSEX...|  Sexual Orientation|                    null|B20618495|\n+---------------+----+-----+----------+--------+------+-----------------+--------------------+--------------------+--------------------+------------------------+---------+\nonly showing top 20 rows\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://hc10.nyu.cluster:39979/jobs/job?id=63",
+              "$$hashKey": "object:810"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1617155215177_1194763644",
+      "id": "paragraph_1617155215177_1194763644",
+      "dateCreated": "2021-03-30T21:46:55-0400",
+      "dateStarted": "2021-03-30T23:45:33-0400",
+      "dateFinished": "2021-03-30T23:45:33-0400",
+      "status": "FINISHED",
+      "$$hashKey": "object:323"
+    },
+    {
+      "title": "Covid Daily Cases - 2020",
+      "text": "%pyspark\ncases = spark.read.format(\"csv\").options(header=\"true\", inferschema=\"true\").load(\"data/cases-by-day.csv\")\ncases.createOrReplaceTempView(\"cases\")\ncases.printSchema()",
+      "user": "anonymous",
+      "dateUpdated": "2021-03-30T23:55:59-0400",
+      "progress": 0,
+      "config": {
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/python",
+        "fontSize": 9,
+        "title": true,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "root\n |-- date_of_interest: string (nullable = true)\n |-- CASE_COUNT: integer (nullable = true)\n |-- PROBABLE_CASE_COUNT: integer (nullable = true)\n |-- CASE_COUNT_7DAY_AVG: integer (nullable = true)\n |-- ALL_CASE_COUNT_7DAY_AVG: integer (nullable = true)\n |-- BX_CASE_COUNT: integer (nullable = true)\n |-- BX_PROBABLE_CASE_COUNT: integer (nullable = true)\n |-- BX_CASE_COUNT_7DAY_AVG: integer (nullable = true)\n |-- BX_ALL_CASE_COUNT_7DAY_AVG: integer (nullable = true)\n |-- BK_CASE_COUNT: integer (nullable = true)\n |-- BK_PROBABLE_CASE_COUNT: integer (nullable = true)\n |-- BK_CASE_COUNT_7DAY_AVG: integer (nullable = true)\n |-- BK_ALL_CASE_COUNT_7DAY_AVG: integer (nullable = true)\n |-- MN_CASE_COUNT: integer (nullable = true)\n |-- MN_PROBABLE_CASE_COUNT: integer (nullable = true)\n |-- MN_CASE_COUNT_7DAY_AVG: integer (nullable = true)\n |-- MN_ALL_CASE_COUNT_7DAY_AVG: integer (nullable = true)\n |-- QN_CASE_COUNT: integer (nullable = true)\n |-- QN_PROBABLE_CASE_COUNT: integer (nullable = true)\n |-- QN_CASE_COUNT_7DAY_AVG: integer (nullable = true)\n |-- QN_ALL_CASE_COUNT_7DAY_AVG: integer (nullable = true)\n |-- SI_CASE_COUNT: integer (nullable = true)\n |-- SI_PROBABLE_CASE_COUNT: integer (nullable = true)\n |-- SI_CASE_COUNT_7DAY_AVG: integer (nullable = true)\n |-- SI_ALL_CASE_COUNT_7DAY_AVG: integer (nullable = true)\n |-- INCOMPLETE: integer (nullable = true)\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://hc10.nyu.cluster:39979/jobs/job?id=64",
+              "$$hashKey": "object:856"
+            },
+            {
+              "jobUrl": "http://hc10.nyu.cluster:39979/jobs/job?id=65",
+              "$$hashKey": "object:857"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1617161472142_708731594",
+      "id": "paragraph_1617161472142_708731594",
+      "dateCreated": "2021-03-30T23:31:12-0400",
+      "dateStarted": "2021-03-30T23:45:33-0400",
+      "dateFinished": "2021-03-30T23:45:33-0400",
+      "status": "FINISHED",
+      "$$hashKey": "object:324"
+    },
+    {
+      "text": "%pyspark\nquery = \"select date_of_interest as Date, CASE_COUNT as Count, BX_CASE_COUNT as BRONX, BK_CASE_COUNT as KINGS, MN_CASE_COUNT as NEW_YORK, QN_CASE_COUNT as QUEENS, SI_CASE_COUNT as RICHMOND from cases\"\ncases = spark.sql(query)\ncases.createOrReplaceTempView(\"cases\")",
+      "user": "anonymous",
+      "dateUpdated": "2021-03-30T23:45:33-0400",
+      "progress": 0,
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "results": {},
+        "enabled": true,
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1617161612185_1896248159",
+      "id": "paragraph_1617161612185_1896248159",
+      "dateCreated": "2021-03-30T23:33:32-0400",
+      "dateStarted": "2021-03-30T23:45:33-0400",
+      "dateFinished": "2021-03-30T23:45:33-0400",
+      "status": "FINISHED",
+      "$$hashKey": "object:325"
+    },
+    {
+      "text": "%pyspark\nquery = \"select * from cases where Date like '%/2020'\"\ncases_2020 = spark.sql(query)\ncases_2020.createOrReplaceTempView(\"cases_2020\")\ncases_2020.show()",
+      "user": "anonymous",
+      "dateUpdated": "2021-03-30T23:45:33-0400",
+      "progress": 0,
+      "config": {
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/python",
+        "fontSize": 9,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "+----------+-----+-----+-----+--------+------+--------+\n|      Date|Count|BRONX|KINGS|NEW_YORK|QUEENS|RICHMOND|\n+----------+-----+-----+-----+--------+------+--------+\n|02/29/2020|    1|    0|    0|       1|     0|       0|\n|03/01/2020|    0|    0|    0|       0|     0|       0|\n|03/02/2020|    0|    0|    0|       0|     0|       0|\n|03/03/2020|    1|    0|    0|       0|     1|       0|\n|03/04/2020|    5|    0|    1|       2|     2|       0|\n|03/05/2020|    3|    0|    3|       0|     0|       0|\n|03/06/2020|    8|    2|    1|       3|     1|       1|\n|03/07/2020|    7|    0|    2|       1|     3|       1|\n|03/08/2020|   21|    3|    5|       6|     6|       1|\n|03/09/2020|   57|    4|   16|      24|    10|       3|\n|03/10/2020|   69|    8|   11|      24|    24|       2|\n|03/11/2020|  155|   19|   31|      62|    40|       3|\n|03/12/2020|  355|   29|   96|     137|    80|      13|\n|03/13/2020|  619|   79|  166|     182|   166|      26|\n|03/14/2020|  642|   86|  163|     176|   194|      23|\n|03/15/2020| 1035|  119|  433|     206|   230|      47|\n|03/16/2020| 2121|  305|  740|     457|   528|      91|\n|03/17/2020| 2452|  343|  783|     567|   651|     108|\n|03/18/2020| 2971|  482|  966|     538|   834|     150|\n|03/19/2020| 3707|  623| 1204|     556|  1065|     258|\n+----------+-----+-----+-----+--------+------+--------+\nonly showing top 20 rows\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://hc10.nyu.cluster:39979/jobs/job?id=66",
+              "$$hashKey": "object:947"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1617162072625_117108326",
+      "id": "paragraph_1617162072625_117108326",
+      "dateCreated": "2021-03-30T23:41:12-0400",
+      "dateStarted": "2021-03-30T23:45:33-0400",
+      "dateFinished": "2021-03-30T23:45:33-0400",
+      "status": "FINISHED",
+      "$$hashKey": "object:326"
+    }
+  ],
+  "name": "Data_Cleaning",
+  "id": "2G1D4SKXK",
+  "defaultInterpreterGroup": "spark",
+  "version": "0.9.0",
+  "noteParams": {},
+  "noteForms": {},
+  "angularObjects": {},
+  "config": {
+    "isZeppelinNotebookCronEnable": false,
+    "looknfeel": "default",
+    "personalizedMode": "false"
+  },
+  "info": {},
+  "path": "/Data_Cleaning"
+}
