@@ -6,6 +6,9 @@ __pycache__/
 # C extensions
 *.so
 
+# oversize files
+NYPD_Complaint_Data_Historic.csv
+
 # Distribution / packaging
 .Python
 build/
